@@ -1,0 +1,14 @@
+.word-input {
+	background: none;
+	border: none;
+	border-bottom: 1px solid grey;
+	font-family: inherit;
+	font-size: 1em;
+	margin: 0 1em;
+	width: fit-content;
+
+	&:focus {
+		border-bottom: 1px solid black;
+		outline: none;
+	}
+}

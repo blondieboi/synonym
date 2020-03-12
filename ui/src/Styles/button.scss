@@ -1,0 +1,34 @@
+@import "./variables";
+
+button {
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:focus {
+		outline: none;
+	}
+}
+
+.action-button {
+	border: none;
+	border-radius: 50%;
+	height: 3em;
+	width: 3em;
+	background-color: $color3;
+
+	&:hover {
+		background-color: $color3-dark;
+	}
+}
+
+.cta-button {
+	border: none;
+	border-radius: 0.2em;
+	padding: 2em 4em;
+	background-color: $color3;
+
+	&:hover {
+		background-color: $color3-dark;
+	}
+}
