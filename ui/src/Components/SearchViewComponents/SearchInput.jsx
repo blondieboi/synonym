@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 import response from '../../Mock/response.json';
+import { onlyLetters } from '../../Utils/onlyLetters';
 
 const SearchInput = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleInput = e => {
-    setSearchTerm(e.target.value);
+    if (onlyLetters(e.target.value)) {
+      setSearchTerm(e.target.value.toLowerCase());
+    }
+  };
+
+  const handleSearch = () => {
+    console.log(searchTerm);
   };
 
   const SearchResults = ({ list }) => {
     const resultList = list.results.map((item, key) => {
-      return <div key={key}>{item.value}</div>;
+      return <li key={key}>{item.value}</li>;
     });
-    return <div>{resultList}</div>;
+    return <ul>{resultList}</ul>;
   };
 
   return (
@@ -25,6 +32,7 @@ const SearchInput = () => {
         onChange={handleInput}
         className="word-input"
       />
+      {searchTerm !== '' ? <button onClick={handleSearch}>Search</button> : ''}
       <SearchResults list={response} />
     </div>
   );
