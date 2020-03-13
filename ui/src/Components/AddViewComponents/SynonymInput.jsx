@@ -45,14 +45,14 @@ const SynonymInput = () => {
     console.log(synonyms);
   };
 
-  const SynonymListItem = ({ index, item }) => {
+  const SynonymListItem = ({ k, index, item }) => {
     const handleDelete = index => {
       const newSynonyms = [...synonyms];
       newSynonyms.splice(index, 1);
       setSynonyms(newSynonyms);
     };
     return (
-      <div key={index} className="list-item">
+      <div key={k} className="list-item">
         {item.item}
         <button className="action-button" onClick={() => handleDelete(index)}>
           -
@@ -62,7 +62,7 @@ const SynonymInput = () => {
   };
 
   const synonymList = synonyms.map((item, index) => {
-    return <SynonymListItem item={item} index={index} />;
+    return <SynonymListItem key={index} item={item} index={index} />;
   });
 
   return (
