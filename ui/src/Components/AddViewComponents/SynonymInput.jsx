@@ -34,7 +34,13 @@ const SynonymInput = () => {
   };
 
   const handleNewSynonym = () => {
-    if (!inputValue || existsAlready(inputValue.toLowerCase())) return;
+    if (
+      !inputValue ||
+      existsAlready(inputValue.toLowerCase()) ||
+      word === '' ||
+      inputValue.toLowerCase() === word
+    )
+      return;
     addToList(inputValue.toLowerCase());
     setInputValue('');
   };
@@ -80,6 +86,7 @@ const SynonymInput = () => {
         {synonyms.length > 0 ? 'and' : ''}
         <input
           type="text"
+          onKeyDown={e => (e.keyCode === 13 ? handleNewSynonym() : '')}
           onChange={handleSynonymInput}
           value={inputValue}
           className="word-input"
