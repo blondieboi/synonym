@@ -9,6 +9,9 @@ const SearchInput = () => {
     if (onlyLetters(e.target.value)) {
       setSearchTerm(e.target.value.toLowerCase());
     }
+    if (e.target.value.length > 2) {
+      console.log('search for words');
+    }
   };
 
   const handleSearch = () => {
