@@ -1,16 +1,17 @@
-import React from "react";
-import SearchInput from "../Components/SearchViewComponents/SearchInput";
-import SearchResults from "../Components/SearchViewComponents/SearchResults";
+import React from 'react';
+import ViewHeader from '../Components/ViewHeader';
+import SearchInput from '../Components/SearchViewComponents/SearchInput';
 
 const SearchView = () => {
-	return (
-		<div>
-			<h1>Search for synonyms</h1>
-			<h4>because their is always more than one word to say something</h4>
-			<SearchInput />
-			<SearchResults />
-		</div>
-	);
+  return (
+    <div className="view">
+      <ViewHeader
+        title={'Search for synonyms'}
+        subtitle={'because their is always more than one word to say something'}
+      />
+      <SearchInput />
+    </div>
+  );
 };
 
 export default SearchView;
