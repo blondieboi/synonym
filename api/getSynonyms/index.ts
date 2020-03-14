@@ -8,7 +8,7 @@ const httpTrigger: AzureFunction = async function(
 ): Promise<void> {
 	if (req.query.searchTerm) {
 		await fetchEntitiesFromTable(req.query.searchTerm, "SynonymTable")
-			.then((res: any) => {
+			.then(async (res: any) => {
 				const responseBody = res.entries.map(item => {
 					let rkValue = item["RowKey"]["_"];
 					let pkValue = item["PartitionKey"]["_"];
@@ -19,7 +19,7 @@ const httpTrigger: AzureFunction = async function(
 					}
 				});
 
-				let uniq = a => [...new Set(a)];
+				let uniq: any = a => [...new Set(a)];
 
 				context.res = {
 					status: 200,

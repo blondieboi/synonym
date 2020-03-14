@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { onlyLetters } from "../../Utils/onlyLetters";
+import { formatValidator } from "../../Utils/formatValidator";
+import { existsInList } from "../../Utils/existsInList";
+import Error from "../Error";
 import "../../Styles/input.scss";
 import "../../Styles/button.scss";
 import axios from "axios";
@@ -13,14 +15,14 @@ const SynonymInput = () => {
 
 	const handleWord = e => {
 		setIsError(false);
-		if (onlyLetters(e.target.value)) {
+		if (formatValidator(e.target.value)) {
 			setWord(e.target.value.toLowerCase());
 		}
 	};
 
 	const handleSynonymInput = e => {
 		setIsError(false);
-		if (onlyLetters(e.target.value)) {
+		if (formatValidator(e.target.value)) {
 			setInputValue(e.target.value.toLowerCase());
 		}
 	};
@@ -30,18 +32,10 @@ const SynonymInput = () => {
 		setSynonyms(newSynonyms);
 	};
 
-	const existsAlready = input => {
-		if (synonyms.filter(item => item.item === input.toLowerCase()).length > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	};
-
 	const handleNewSynonym = () => {
 		if (
 			!inputValue ||
-			existsAlready(inputValue.toLowerCase()) ||
+			existsInList(inputValue.toLowerCase(), synonyms) ||
 			word === "" ||
 			inputValue.toLowerCase() === word
 		)
@@ -107,7 +101,7 @@ const SynonymInput = () => {
 				{synonyms.length > 0 ? "and" : ""}
 				<input
 					type="text"
-					onKeyDown={e => (e.keyCode === 13 ? handleNewSynonym() : "")}
+					onKeyDown={e => (e.keyCode === 13 ? handleNewSynonym() : undefined)}
 					onChange={handleSynonymInput}
 					value={inputValue}
 					className="word-input"
@@ -125,15 +119,9 @@ const SynonymInput = () => {
 					{isLoading ? "Loading" : "Done, I am out of synonyms."}
 				</button>
 			) : (
-				""
+				<></>
 			)}
-			{isError ? (
-				<p className="result-container">
-					Something went wrong, please try again while we fire our architect!
-				</p>
-			) : (
-				""
-			)}
+			{isError ? <Error /> : <></>}
 		</div>
 	);
 };
