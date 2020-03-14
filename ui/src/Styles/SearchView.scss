@@ -1,0 +1,16 @@
+@import "./variables";
+
+.result-container {
+	margin-top: 50px;
+}
+
+.cta-link {
+	padding-left: 10px;
+	text-decoration: underline;
+	color: red;
+	opacity: 1;
+
+	&:hover {
+		color: darken($color: #000000, $amount: 0);
+	}
+}

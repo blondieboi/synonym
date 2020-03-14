@@ -23,7 +23,10 @@ const httpTrigger: AzureFunction = async function(
 
 				context.res = {
 					status: 200,
-					body: uniq(responseBody)
+					body: {
+						term: req.query.searchTerm,
+						synonyms: uniq(responseBody)
+					}
 				};
 			})
 			.catch(

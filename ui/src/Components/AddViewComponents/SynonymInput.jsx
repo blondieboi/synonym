@@ -8,14 +8,18 @@ const SynonymInput = () => {
 	const [word, setWord] = useState("");
 	const [inputValue, setInputValue] = useState("");
 	const [synonyms, setSynonyms] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isError, setIsError] = useState(false);
 
 	const handleWord = e => {
+		setIsError(false);
 		if (onlyLetters(e.target.value)) {
 			setWord(e.target.value.toLowerCase());
 		}
 	};
 
 	const handleSynonymInput = e => {
+		setIsError(false);
 		if (onlyLetters(e.target.value)) {
 			setInputValue(e.target.value.toLowerCase());
 		}
@@ -47,14 +51,11 @@ const SynonymInput = () => {
 	};
 
 	const handleSubmit = () => {
+		setIsLoading(true);
 		if (word === "" || synonyms.length === 0) return;
-
 		const arr = synonyms.map(item => {
 			return item.item;
 		});
-
-		console.log(word);
-		console.log(arr);
 
 		axios
 			.post(process.env.REACT_APP_API_BASE_URL + "postSynonyms", {
@@ -66,8 +67,9 @@ const SynonymInput = () => {
 				setSynonyms([]);
 			})
 			.catch(err => {
-				console.log("something went wrong");
+				setIsError(true);
 			});
+		setIsLoading(false);
 	};
 
 	const SynonymListItem = ({ k, index, item }) => {
@@ -115,9 +117,20 @@ const SynonymInput = () => {
 				</button>
 			</div>
 			{synonyms.length > 0 ? (
-				<button className="cta-button" onClick={handleSubmit}>
-					Done, I am out of synonyms.
+				<button
+					disabled={inputValue === "" ? false : true}
+					className="cta-button"
+					onClick={handleSubmit}
+				>
+					{isLoading ? "Loading" : "Done, I am out of synonyms."}
 				</button>
+			) : (
+				""
+			)}
+			{isError ? (
+				<p className="result-container">
+					Something went wrong, please try again while we fire our architect!
+				</p>
 			) : (
 				""
 			)}

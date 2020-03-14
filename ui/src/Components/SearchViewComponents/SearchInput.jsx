@@ -1,12 +1,21 @@
 import React, { useState } from "react";
 import { onlyLetters } from "../../Utils/onlyLetters";
 import axios from "axios";
+import "../../Styles/SearchView.scss";
 
 const SearchInput = () => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [results, setResults] = useState([]);
+	const [hasSearched, setHasSearched] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [isError, setIsError] = useState(false);
+	const [results, setResults] = useState({
+		term: "",
+		synonyms: []
+	});
 
 	const handleInput = e => {
+		setHasSearched(false);
+		setIsError(false);
 		if (onlyLetters(e.target.value)) {
 			setSearchTerm(e.target.value.toLowerCase());
 		}
@@ -16,6 +25,8 @@ const SearchInput = () => {
 	};
 
 	const handleSearch = () => {
+		setIsLoading(true);
+		if (searchTerm === "") return;
 		axios
 			.get(
 				process.env.REACT_APP_API_BASE_URL +
@@ -25,17 +36,47 @@ const SearchInput = () => {
 			.then(res => {
 				setResults(res.data);
 				setSearchTerm("");
+				setHasSearched(true);
 			})
 			.catch(err => {
-				console.log("something went wrong");
+				setIsError(true);
 			});
+		setIsLoading(false);
 	};
 
 	const SearchResults = ({ list }) => {
-		const resultList = list.map((item, key) => {
-			return <li key={key}>{item}</li>;
+		const resultList = list.synonyms.map((item, key) => {
+			return (
+				<li key={key} className="result-list-item">
+					{item}
+				</li>
+			);
 		});
-		return <ul>{resultList}</ul>;
+		if (!hasSearched) return <></>;
+		return (
+			<div className="result-container">
+				{resultList.length > 0 ? (
+					<div>
+						<p className="result-text">
+							Here are the synonyms we found for the word: {list.term}
+						</p>
+						<ul className="result-list">{resultList}</ul>
+					</div>
+				) : (
+					<div>
+						<p className="result-text">
+							We couldn't find synonyms for the word: {list.term}
+						</p>
+						<p className="cta-text">
+							Can you think of a few?
+							<a className="cta-link" href="/contribute">
+								Contribute some of your own!
+							</a>
+						</p>
+					</div>
+				)}
+			</div>
+		);
 	};
 
 	return (
@@ -47,15 +88,23 @@ const SearchInput = () => {
 				placeholder="Type to search!"
 				onChange={handleInput}
 				className="word-input"
+				onKeyDown={e => (e.keyCode === 13 ? handleSearch() : "")}
 			/>
 			{searchTerm !== "" ? (
 				<button className="search-button" onClick={handleSearch}>
-					Search
+					{isLoading ? "..." : "Search"}
 				</button>
 			) : (
 				""
 			)}
 			<SearchResults list={results} />
+			{isError ? (
+				<p className="result-container">
+					Something went wrong, please try again while we fire our architect!
+				</p>
+			) : (
+				""
+			)}
 		</div>
 	);
 };
