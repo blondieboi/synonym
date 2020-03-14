@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { formatValidator } from "../Utils/formatValidator";
 import SearchResults from "./SearchResults";
 import Error from "./Error";
-import axios from "axios";
 import "../Styles/SearchView.scss";
+import "../Styles/Atoms/input.scss";
+import "../Styles/Atoms/button.scss";
 
 const SearchInput = () => {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -44,23 +46,26 @@ const SearchInput = () => {
 	};
 
 	return (
-		<div className="add-container">
-			What is a synonym for the word:
-			<input
-				type="text"
-				value={searchTerm}
-				placeholder="Type to search!"
-				onChange={handleSearchInput}
-				className="word-input"
-				onKeyDown={e => (e.keyCode === 13 ? handleSearch() : undefined)}
-			/>
-			{searchTerm !== "" ? (
-				<button className="search-button" onClick={handleSearch}>
-					{isLoading ? "..." : "Search"}
-				</button>
-			) : (
-				<></>
-			)}
+		<div className="view-content">
+			<div className="search-bar">
+				<p>What is a synonym for the word:</p>
+				<input
+					type="text"
+					value={searchTerm}
+					placeholder="Type to search!"
+					onChange={handleSearchInput}
+					className="text-input"
+					onKeyDown={e => (e.keyCode === 13 ? handleSearch() : undefined)}
+				/>
+				{searchTerm !== "" ? (
+					<button className="search-button" onClick={handleSearch}>
+						{isLoading ? "..." : "Search"}
+					</button>
+				) : (
+					<></>
+				)}
+			</div>
+
 			{hasSearched ? <SearchResults searchResults={results} /> : <></>}
 			{isError ? <Error /> : <></>}
 		</div>

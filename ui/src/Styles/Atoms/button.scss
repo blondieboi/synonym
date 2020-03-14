@@ -1,0 +1,35 @@
+@import "../variables";
+
+button {
+	background-color: $color-button;
+	border: none;
+	&:hover {
+		cursor: pointer;
+		background-color: $color-button-hover;
+	}
+
+	&:focus {
+		outline: none;
+	}
+
+	&:disabled {
+		background-color: $color-button-disabled;
+		cursor: initial;
+	}
+}
+
+.round-button {
+	border-radius: 50%;
+	height: 3em;
+	width: 3em;
+}
+
+.search-button {
+	border-radius: 0.2em;
+	padding: 1em 2em;
+}
+
+.submit-button {
+	border-radius: 0.2em;
+	padding: 2em 4em;
+}

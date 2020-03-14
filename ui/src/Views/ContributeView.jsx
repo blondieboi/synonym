@@ -1,7 +1,7 @@
 import React from "react";
 import ViewHeader from "../Components/ViewHeader";
 import ContributeInput from "../Components/ContributeInput";
-import "../Styles/views.scss";
+import "../Styles/Views.scss";
 import "../Styles/AddView.scss";
 
 const ContributeView = () => {

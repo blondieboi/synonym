@@ -1,30 +1,25 @@
 import React from "react";
+import "../Styles/Atoms/anchor.scss";
 
 const SearchResults = ({ searchResults }) => {
 	const synonymList = searchResults.synonyms.map((item, key) => {
-		return (
-			<li key={key} className="result-list-item">
-				{item}
-			</li>
-		);
+		return <li key={key}>{item}</li>;
 	});
 	return (
 		<div className="result-container">
 			{synonymList.length > 0 ? (
 				<div>
-					<p className="result-text">
+					<p>
 						Here are the synonyms we found for the word: {searchResults.term}
 					</p>
-					<ul className="result-list">{synonymList}</ul>
+					<ul>{synonymList}</ul>
 				</div>
 			) : (
 				<div>
-					<p className="result-text">
-						We couldn't find synonyms for the word: {searchResults.term}
-					</p>
-					<p className="cta-text">
+					<p>We couldn't find synonyms for the word: {searchResults.term}</p>
+					<p>
 						Can you think of a few?
-						<a className="cta-link" href="/contribute">
+						<a className="link" href="/contribute">
 							Contribute some of your own!
 						</a>
 					</p>

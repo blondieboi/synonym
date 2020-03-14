@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { formatValidator } from "../Utils/formatValidator";
 import { existsInList } from "../Utils/existsInList";
 import Error from "./Error";
-import "../Styles/input.scss";
-import "../Styles/button.scss";
-import axios from "axios";
+import "../Styles/Views.scss";
+import "../Styles/Atoms/input.scss";
+import "../Styles/Atoms/button.scss";
 
 const ContributeInput = () => {
 	const [term, setTerm] = useState("");
@@ -71,7 +72,7 @@ const ContributeInput = () => {
 		return (
 			<div key={i} className="list-item">
 				{item.value}
-				<button className="action-button" onClick={() => deleteSynonym(index)}>
+				<button className="round-button" onClick={() => deleteSynonym(index)}>
 					-
 				</button>
 			</div>
@@ -81,35 +82,42 @@ const ContributeInput = () => {
 	const synonymList = synonyms.map((item, index) => {
 		return <SynonymListItem key={index} item={item} index={index} />;
 	});
-	console.log(synonym);
+
 	return (
 		<div>
-			<div className="add-container">
-				The word
-				<input
-					type="text"
-					value={term}
-					onChange={handleTermInput}
-					className="word-input"
-				/>
-				has the following {synonyms.length > 0 ? "synonyms" : "synonym"}:
+			<div className="view-content">
+				<div className="term-bar">
+					<p>The word</p>
+					<input
+						type="text"
+						value={term}
+						onChange={handleTermInput}
+						className="text-input"
+					/>
+					<p>
+						has the following {synonyms.length > 0 ? "synonyms" : "synonym"}:
+					</p>
+				</div>
+
 				{synonymList}
-				{synonyms.length > 0 ? "and" : ""}
-				<input
-					type="text"
-					onKeyDown={e => (e.keyCode === 13 ? addSynonym() : undefined)}
-					onChange={handleSynonymInput}
-					value={synonym}
-					className="word-input"
-				/>
-				<button onClick={addSynonym} className="action-button">
-					+
-				</button>
+				<div className="synonym-bar">
+					{synonyms.length > 0 ? <p>and</p> : ""}
+					<input
+						type="text"
+						onKeyDown={e => (e.keyCode === 13 ? addSynonym() : undefined)}
+						onChange={handleSynonymInput}
+						value={synonym}
+						className="text-input"
+					/>
+					<button onClick={addSynonym} className="round-button">
+						+
+					</button>
+				</div>
 			</div>
 			{synonyms.length > 0 ? (
 				<button
 					disabled={synonym === "" ? false : true}
-					className="cta-button"
+					className="submit-button"
 					onClick={submitSynonyms}
 				>
 					{isLoading ? "Loading" : "Done, I am out of synonyms."}

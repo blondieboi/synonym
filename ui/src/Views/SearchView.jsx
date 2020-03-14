@@ -1,6 +1,7 @@
 import React from "react";
 import ViewHeader from "../Components/ViewHeader";
 import SearchInput from "../Components/SearchInput";
+import "../Styles/Views.scss";
 
 const SearchView = () => {
 	return (

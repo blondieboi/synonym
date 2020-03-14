@@ -1,12 +1,12 @@
-@import './Styles/variables';
+@import "./Styles/variables";
 
 body {
-  background-color: $color4;
+	background-color: $color-background;
 }
 
 .App {
-  height: 100vh;
-  padding: 0;
-  margin: 0;
-  color: black;
+	height: 100vh;
+	padding: 0;
+	margin: 0;
+	color: black;
 }

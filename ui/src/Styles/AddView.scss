@@ -1,11 +1,37 @@
-.add-container {
-	padding: 2em 0;
-}
-
 .list-item {
 	margin: 1em 0;
 
 	button {
 		margin: 0 2em;
+	}
+}
+
+.term-bar {
+	display: flex;
+	align-items: center;
+
+	@media (max-width: 800px) {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	p,
+	input {
+		margin: 0;
+		margin-right: 1em;
+		margin-top: 1em;
+	}
+}
+
+.synonym-bar {
+	display: flex;
+	align-items: center;
+
+	p,
+	input,
+	button {
+		margin: 0;
+		margin-right: 1em;
+		margin-top: 1em;
 	}
 }
