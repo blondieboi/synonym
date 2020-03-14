@@ -6,9 +6,9 @@ const httpTrigger: AzureFunction = async function(
 	context: Context,
 	req: HttpRequest
 ): Promise<void> {
-	if (req.body && req.body.synonyms && req.body.word) {
+	if (req.body && req.body.synonyms && req.body.term) {
 		await insertEntitiesInTable(
-			req.body.word,
+			req.body.term,
 			req.body.synonyms,
 			"SynonymTable"
 		)
@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function(
 export default httpTrigger;
 
 const insertEntitiesInTable = (
-	word: string,
+	term: string,
 	synonyms: Array<string>,
 	tableName: string
 ) => {
@@ -44,7 +44,7 @@ const insertEntitiesInTable = (
 
 	synonyms.map(synonym => {
 		let task = {
-			PartitionKey: entGen.String(word),
+			PartitionKey: entGen.String(term),
 			RowKey: entGen.String(synonym)
 		};
 		batch.insertOrReplaceEntity(task, { echoContent: true });

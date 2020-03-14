@@ -1,7 +1,7 @@
 import React from "react";
 
-const SearchResults = ({ list }) => {
-	const resultList = list.synonyms.map((item, key) => {
+const SearchResults = ({ searchResults }) => {
+	const synonymList = searchResults.synonyms.map((item, key) => {
 		return (
 			<li key={key} className="result-list-item">
 				{item}
@@ -10,17 +10,17 @@ const SearchResults = ({ list }) => {
 	});
 	return (
 		<div className="result-container">
-			{resultList.length > 0 ? (
+			{synonymList.length > 0 ? (
 				<div>
 					<p className="result-text">
-						Here are the synonyms we found for the word: {list.term}
+						Here are the synonyms we found for the word: {searchResults.term}
 					</p>
-					<ul className="result-list">{resultList}</ul>
+					<ul className="result-list">{synonymList}</ul>
 				</div>
 			) : (
 				<div>
 					<p className="result-text">
-						We couldn't find synonyms for the word: {list.term}
+						We couldn't find synonyms for the word: {searchResults.term}
 					</p>
 					<p className="cta-text">
 						Can you think of a few?

@@ -15,7 +15,7 @@ const SearchInput = () => {
 		synonyms: []
 	});
 
-	const handleInput = e => {
+	const handleSearchInput = e => {
 		setHasSearched(false);
 		setIsError(false);
 		if (formatValidator(e.target.value)) {
@@ -50,7 +50,7 @@ const SearchInput = () => {
 				type="text"
 				value={searchTerm}
 				placeholder="Type to search!"
-				onChange={handleInput}
+				onChange={handleSearchInput}
 				className="word-input"
 				onKeyDown={e => (e.keyCode === 13 ? handleSearch() : undefined)}
 			/>
@@ -61,7 +61,7 @@ const SearchInput = () => {
 			) : (
 				<></>
 			)}
-			{hasSearched ? <SearchResults list={results} /> : <></>}
+			{hasSearched ? <SearchResults searchResults={results} /> : <></>}
 			{isError ? <Error /> : <></>}
 		</div>
 	);

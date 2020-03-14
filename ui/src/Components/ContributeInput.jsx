@@ -6,58 +6,54 @@ import "../Styles/input.scss";
 import "../Styles/button.scss";
 import axios from "axios";
 
-const SynonymInput = () => {
-	const [word, setWord] = useState("");
-	const [inputValue, setInputValue] = useState("");
+const ContributeInput = () => {
+	const [term, setTerm] = useState("");
+	const [synonym, setSynonym] = useState("");
 	const [synonyms, setSynonyms] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isError, setIsError] = useState(false);
 
-	const handleWord = e => {
+	const handleTermInput = e => {
 		setIsError(false);
 		if (formatValidator(e.target.value)) {
-			setWord(e.target.value.toLowerCase());
+			setTerm(e.target.value.toLowerCase());
 		}
 	};
 
 	const handleSynonymInput = e => {
 		setIsError(false);
 		if (formatValidator(e.target.value)) {
-			setInputValue(e.target.value.toLowerCase());
+			setSynonym(e.target.value.toLowerCase());
 		}
 	};
 
-	const addToList = item => {
-		const newSynonyms = [...synonyms, { item }];
-		setSynonyms(newSynonyms);
-	};
-
-	const handleNewSynonym = () => {
+	const addSynonym = () => {
 		if (
-			!inputValue ||
-			existsInList(inputValue.toLowerCase(), synonyms) ||
-			word === "" ||
-			inputValue.toLowerCase() === word
+			!synonym ||
+			existsInList(synonym.toLowerCase(), synonyms) ||
+			term === "" ||
+			synonym.toLowerCase() === term
 		)
 			return;
-		addToList(inputValue.toLowerCase());
-		setInputValue("");
+		const newSynonyms = [...synonyms, { value: synonym.toLowerCase() }];
+		setSynonyms(newSynonyms);
+		setSynonym("");
 	};
 
-	const handleSubmit = () => {
+	const submitSynonyms = () => {
 		setIsLoading(true);
-		if (word === "" || synonyms.length === 0) return;
-		const arr = synonyms.map(item => {
-			return item.item;
+		if (term === "" || synonyms.length === 0) return;
+		const synonymArray = synonyms.map(item => {
+			return item.value;
 		});
 
 		axios
 			.post(process.env.REACT_APP_API_BASE_URL + "postSynonyms", {
-				word: word,
-				synonyms: arr
+				term: term,
+				synonyms: synonymArray
 			})
 			.then(res => {
-				setWord("");
+				setTerm("");
 				setSynonyms([]);
 			})
 			.catch(err => {
@@ -66,16 +62,16 @@ const SynonymInput = () => {
 		setIsLoading(false);
 	};
 
-	const SynonymListItem = ({ k, index, item }) => {
-		const handleDelete = index => {
+	const SynonymListItem = ({ i, index, item }) => {
+		const deleteSynonym = index => {
 			const newSynonyms = [...synonyms];
 			newSynonyms.splice(index, 1);
 			setSynonyms(newSynonyms);
 		};
 		return (
-			<div key={k} className="list-item">
-				{item.item}
-				<button className="action-button" onClick={() => handleDelete(index)}>
+			<div key={i} className="list-item">
+				{item.value}
+				<button className="action-button" onClick={() => deleteSynonym(index)}>
 					-
 				</button>
 			</div>
@@ -85,15 +81,15 @@ const SynonymInput = () => {
 	const synonymList = synonyms.map((item, index) => {
 		return <SynonymListItem key={index} item={item} index={index} />;
 	});
-
+	console.log(synonym);
 	return (
 		<div>
 			<div className="add-container">
 				The word
 				<input
 					type="text"
-					value={word}
-					onChange={handleWord}
+					value={term}
+					onChange={handleTermInput}
 					className="word-input"
 				/>
 				has the following {synonyms.length > 0 ? "synonyms" : "synonym"}:
@@ -101,20 +97,20 @@ const SynonymInput = () => {
 				{synonyms.length > 0 ? "and" : ""}
 				<input
 					type="text"
-					onKeyDown={e => (e.keyCode === 13 ? handleNewSynonym() : undefined)}
+					onKeyDown={e => (e.keyCode === 13 ? addSynonym() : undefined)}
 					onChange={handleSynonymInput}
-					value={inputValue}
+					value={synonym}
 					className="word-input"
 				/>
-				<button onClick={handleNewSynonym} className="action-button">
+				<button onClick={addSynonym} className="action-button">
 					+
 				</button>
 			</div>
 			{synonyms.length > 0 ? (
 				<button
-					disabled={inputValue === "" ? false : true}
+					disabled={synonym === "" ? false : true}
 					className="cta-button"
-					onClick={handleSubmit}
+					onClick={submitSynonyms}
 				>
 					{isLoading ? "Loading" : "Done, I am out of synonyms."}
 				</button>
@@ -126,4 +122,4 @@ const SynonymInput = () => {
 	);
 };
 
-export default SynonymInput;
+export default ContributeInput;

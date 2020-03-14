@@ -1,19 +1,19 @@
 import React from "react";
-import SynonymInput from "../Components/SynonymInput";
 import ViewHeader from "../Components/ViewHeader";
+import ContributeInput from "../Components/ContributeInput";
 import "../Styles/views.scss";
 import "../Styles/AddView.scss";
 
-const AddView = () => {
+const ContributeView = () => {
 	return (
 		<div className="view">
 			<ViewHeader
 				title={"Add synonyms"}
 				subtitle={"because you surely know more than me."}
 			/>
-			<SynonymInput />
+			<ContributeInput />
 		</div>
 	);
 };
 
-export default AddView;
+export default ContributeView;
