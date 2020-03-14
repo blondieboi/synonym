@@ -1,6 +1,6 @@
 import React from "react";
 import ViewHeader from "../Components/ViewHeader";
-import SearchInput from "../Components/SearchViewComponents/SearchInput";
+import SearchInput from "../Components/SearchInput";
 
 const SearchView = () => {
 	return (

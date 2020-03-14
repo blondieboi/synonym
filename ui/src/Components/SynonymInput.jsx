@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { formatValidator } from "../../Utils/formatValidator";
-import { existsInList } from "../../Utils/existsInList";
-import Error from "../Error";
-import "../../Styles/input.scss";
-import "../../Styles/button.scss";
+import { formatValidator } from "../Utils/formatValidator";
+import { existsInList } from "../Utils/existsInList";
+import Error from "./Error";
+import "../Styles/input.scss";
+import "../Styles/button.scss";
 import axios from "axios";
 
 const SynonymInput = () => {

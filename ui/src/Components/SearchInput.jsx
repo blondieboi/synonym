@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { formatValidator } from "../../Utils/formatValidator";
+import { formatValidator } from "../Utils/formatValidator";
 import SearchResults from "./SearchResults";
-import Error from "../Error";
+import Error from "./Error";
 import axios from "axios";
-import "../../Styles/SearchView.scss";
+import "../Styles/SearchView.scss";
 
 const SearchInput = () => {
 	const [searchTerm, setSearchTerm] = useState("");
