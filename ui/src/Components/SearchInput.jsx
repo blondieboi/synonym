@@ -6,6 +6,7 @@ import Error from "./Error";
 import "../Styles/SearchView.scss";
 import "../Styles/Atoms/input.scss";
 import "../Styles/Atoms/button.scss";
+import "../Styles/Atoms/spinner.scss";
 
 const SearchInput = () => {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -26,7 +27,6 @@ const SearchInput = () => {
 	};
 
 	const handleSearch = () => {
-		setIsLoading(true);
 		if (searchTerm === "") return;
 		axios
 			.get(process.env.REACT_APP_API_BASE_URL + "getSynonyms", {
@@ -38,11 +38,12 @@ const SearchInput = () => {
 				setResults(res.data);
 				setSearchTerm("");
 				setHasSearched(true);
+				setIsLoading(false);
 			})
 			.catch(err => {
 				setIsError(true);
+				setIsLoading(false);
 			});
-		setIsLoading(false);
 	};
 
 	return (
@@ -55,11 +56,19 @@ const SearchInput = () => {
 					placeholder="Type to search!"
 					onChange={handleSearchInput}
 					className="text-input"
-					onKeyDown={e => (e.keyCode === 13 ? handleSearch() : undefined)}
+					onKeyDown={e =>
+						e.keyCode === 13 ? (handleSearch(), setIsLoading(true)) : undefined
+					}
 				/>
 				{searchTerm !== "" ? (
-					<button className="search-button" onClick={handleSearch}>
-						{isLoading ? "..." : "Search"}
+					<button
+						className="search-button"
+						onClick={() => {
+							handleSearch();
+							setIsLoading(true);
+						}}
+					>
+						{isLoading ? <div className="loader">Loading...</div> : "Search"}
 					</button>
 				) : (
 					<></>

@@ -42,7 +42,6 @@ const ContributeInput = () => {
 	};
 
 	const submitSynonyms = () => {
-		setIsLoading(true);
 		if (term === "" || synonyms.length === 0) return;
 		const synonymArray = synonyms.map(item => {
 			return item.value;
@@ -56,11 +55,12 @@ const ContributeInput = () => {
 			.then(res => {
 				setTerm("");
 				setSynonyms([]);
+				setIsLoading(false);
 			})
 			.catch(err => {
 				setIsError(true);
+				setIsLoading(false);
 			});
-		setIsLoading(false);
 	};
 
 	const SynonymListItem = ({ i, index, item }) => {
@@ -118,9 +118,16 @@ const ContributeInput = () => {
 				<button
 					disabled={synonym === "" ? false : true}
 					className="submit-button"
-					onClick={submitSynonyms}
+					onClick={() => {
+						submitSynonyms();
+						setIsLoading(true);
+					}}
 				>
-					{isLoading ? "Loading" : "Done, I am out of synonyms."}
+					{isLoading ? (
+						<div className="loader">Loading...</div>
+					) : (
+						"Done, I am out of synonyms."
+					)}
 				</button>
 			) : (
 				<></>
