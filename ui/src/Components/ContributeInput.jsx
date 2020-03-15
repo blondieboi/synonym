@@ -85,7 +85,7 @@ const ContributeInput = () => {
 
 	return (
 		<div>
-			<div className="view-content">
+			<div className="view-content a">
 				<div className="term-bar">
 					<p>The word</p>
 					<input
@@ -97,23 +97,23 @@ const ContributeInput = () => {
 					<p>
 						has the following {synonyms.length > 0 ? "synonyms" : "synonym"}:
 					</p>
-				</div>
 
-				{synonymList}
-				<div className="synonym-bar">
-					{synonyms.length > 0 ? <p>and</p> : ""}
-					<input
-						type="text"
-						onKeyDown={e => (e.keyCode === 13 ? addSynonym() : undefined)}
-						onChange={handleSynonymInput}
-						value={synonym}
-						className="text-input"
-					/>
-					<button onClick={addSynonym} className="round-button">
-						+
-					</button>
+					<div>
+						<input
+							type="text"
+							onKeyDown={e => (e.keyCode === 13 ? addSynonym() : undefined)}
+							onChange={handleSynonymInput}
+							value={synonym}
+							className="text-input"
+						/>
+						<button onClick={addSynonym} className="round-button">
+							+
+						</button>
+					</div>
 				</div>
+				{synonymList}
 			</div>
+
 			{synonyms.length > 0 ? (
 				<button
 					disabled={synonym === "" ? false : true}
