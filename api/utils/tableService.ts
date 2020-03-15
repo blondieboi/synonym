@@ -7,3 +7,5 @@ export const tableService = azure.createTableService(
 );
 
 export const entGen = azure.TableUtilities.entityGenerator;
+
+export const tableName: string = "SynonymTable";

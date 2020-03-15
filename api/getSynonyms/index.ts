@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { tableService, entGen } from "../utils/tableService";
+import { tableService, tableName } from "../utils/tableService";
+import { getRequestResponse, errorResponse } from "../interfaces/interfaces";
 var azure = require("azure-storage");
 
 const httpTrigger: AzureFunction = async function(
@@ -7,33 +8,33 @@ const httpTrigger: AzureFunction = async function(
 	req: HttpRequest
 ): Promise<void> {
 	if (req.query.searchTerm) {
-		await fetchEntitiesFromTable(req.query.searchTerm, "SynonymTable")
-			.then(async (res: any) => {
-				const responseBody = res.entries.map(item => {
-					let rkValue = item["RowKey"]["_"];
-					let pkValue = item["PartitionKey"]["_"];
-					if (rkValue === req.query.searchTerm) {
-						return pkValue;
+		await fetchSynonymsFromTable(req.query.searchTerm, tableName)
+			.then(async (res: getRequestResponse) => {
+				const parsedResponse = res.entries.map(entry => {
+					let rowKeyValue = entry.RowKey._;
+					let partitionKeyValue = entry.PartitionKey._;
+					if (rowKeyValue === req.query.searchTerm) {
+						return partitionKeyValue;
 					} else {
-						return rkValue;
+						return rowKeyValue;
 					}
 				});
 
-				let uniq: any = a => [...new Set(a)];
+				let filterDuplicates: Function = (item: string[]) => [...new Set(item)];
 
 				context.res = {
 					status: 200,
 					body: {
 						term: req.query.searchTerm,
-						synonyms: uniq(responseBody)
+						synonyms: filterDuplicates(parsedResponse)
 					}
 				};
 			})
 			.catch(
-				err =>
+				(err: errorResponse) =>
 					(context.res = {
-						status: 500,
-						body: err
+						status: err.statusCode,
+						body: err.message
 					})
 			);
 	} else {
@@ -46,25 +47,20 @@ const httpTrigger: AzureFunction = async function(
 
 export default httpTrigger;
 
-const fetchEntitiesFromTable = (word: string, tableName: string) => {
+const fetchSynonymsFromTable = (word: string, tableName: string) => {
 	var query = new azure.TableQuery()
 		.where("PartitionKey eq ?", word)
 		.or("RowKey eq ?", word);
 
 	return new Promise((resolve, reject) => {
 		tableService.queryEntities(tableName, query, null, function(
-			error,
-			result,
-			response
+			error: object,
+			result: getRequestResponse
 		) {
 			if (!error) {
 				resolve(result);
 			} else {
-				console.log(error);
-				reject({
-					status: 500,
-					body: error
-				});
+				reject(error);
 			}
 		});
 	});

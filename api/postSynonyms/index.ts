@@ -1,28 +1,30 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { tableService, entGen } from "../utils/tableService";
+import { tableService, entGen, tableName } from "../utils/tableService";
+import { requestBody, errorResponse } from "../interfaces/interfaces";
 var azure = require("azure-storage");
 
 const httpTrigger: AzureFunction = async function(
 	context: Context,
 	req: HttpRequest
 ): Promise<void> {
-	if (req.body && req.body.synonyms && req.body.term) {
-		await insertEntitiesInTable(
-			req.body.term,
-			req.body.synonyms,
-			"SynonymTable"
+	let requestBody: requestBody = req.body;
+	if (req.body && requestBody.term && requestBody.synonyms) {
+		await insertSynonymsInTable(
+			requestBody.term,
+			requestBody.synonyms,
+			tableName
 		)
 			.then(
-				res =>
+				(res: null) =>
 					(context.res = {
 						status: 204
 					})
 			)
 			.catch(
-				err =>
+				(err: errorResponse) =>
 					(context.res = {
-						status: 500,
-						body: `Oops, something went wrong. Error message: ${err}`
+						status: err.statusCode,
+						body: `Oops, something went wrong. Error message: ${err.message}`
 					})
 			);
 	} else {
@@ -35,7 +37,7 @@ const httpTrigger: AzureFunction = async function(
 
 export default httpTrigger;
 
-const insertEntitiesInTable = (
+const insertSynonymsInTable = (
 	term: string,
 	synonyms: Array<string>,
 	tableName: string
@@ -51,19 +53,12 @@ const insertEntitiesInTable = (
 	});
 
 	return new Promise((resolve, reject) => {
-		tableService.executeBatch(tableName, batch, function(
-			error,
-			result,
-			response
-		) {
+		tableService.executeBatch(tableName, batch, function(error: object) {
 			if (!error) {
 				resolve();
 			} else {
 				console.log(error);
-				reject({
-					status: 500,
-					body: error
-				});
+				reject(error);
 			}
 		});
 	});
