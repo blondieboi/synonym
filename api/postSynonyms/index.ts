@@ -56,7 +56,6 @@ const insertSynonymsInTable = (
       if (!error) {
         resolve();
       } else {
-        console.log(error);
         reject(error);
       }
     });
