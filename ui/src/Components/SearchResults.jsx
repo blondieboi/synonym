@@ -11,17 +11,14 @@ const SearchResults = ({ searchResults }) => {
         {synonymList.length > 0 ? (
           <div>
             <p>
-              Here are the synonyms we found for the word:
-              {' '}
-              {searchResults.term}
+              {`Here are the synonyms we found for the word: ${searchResults.term}`}
             </p>
             <ul>{synonymList}</ul>
           </div>
         ) : (
           <div>
             <p>
-              We couldn&apos;t find synonyms for the word:
-              {searchResults.term}
+              {`We couldn't find synonyms for the word: ${searchResults.term}`}
             </p>
             <p>
               Can you think of a few?
