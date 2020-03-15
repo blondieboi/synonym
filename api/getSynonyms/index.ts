@@ -8,27 +8,42 @@ const httpTrigger: AzureFunction = async function(
 	req: HttpRequest
 ): Promise<void> {
 	if (req.query.searchTerm) {
-		await fetchSynonymsFromTable(req.query.searchTerm, tableName)
+		var n1SynonymsQuery = new azure.TableQuery()
+			.where("PartitionKey eq ?", req.query.searchTerm)
+			.or("RowKey eq ?", req.query.searchTerm);
+
+		await fetchSynonymsFromTable(tableName, n1SynonymsQuery)
 			.then(async (res: getRequestResponse) => {
-				const parsedResponse = res.entries.map(entry => {
-					let rowKeyValue = entry.RowKey._;
-					let partitionKeyValue = entry.PartitionKey._;
-					if (rowKeyValue === req.query.searchTerm) {
-						return partitionKeyValue;
-					} else {
-						return rowKeyValue;
-					}
+				const parsedResponse: string[] = formatResponse(
+					res,
+					req.query.searchTerm
+				);
+				var combinedFilter = [];
+				parsedResponse.forEach((word: string) => {
+					combinedFilter.push(
+						`PartitionKey eq '${word}' or RowKey eq '${word}'`
+					);
 				});
+				var queryString = combinedFilter.join(" or ");
+				var n2SynonymsQuery = new azure.TableQuery().where(queryString);
 
-				let filterDuplicates: Function = (item: string[]) => [...new Set(item)];
-
-				context.res = {
-					status: 200,
-					body: {
-						term: req.query.searchTerm,
-						synonyms: filterDuplicates(parsedResponse)
-					}
-				};
+				await fetchSynonymsFromTable(tableName, n2SynonymsQuery)
+					.then((res: getRequestResponse) => {
+						context.res = {
+							status: 200,
+							body: {
+								term: req.query.searchTerm,
+								synonyms: formatResponse(res, req.query.searchTerm)
+							}
+						};
+					})
+					.catch(
+						(err: errorResponse) =>
+							(context.res = {
+								status: err.statusCode,
+								body: err.message
+							})
+					);
 			})
 			.catch(
 				(err: errorResponse) =>
@@ -47,11 +62,7 @@ const httpTrigger: AzureFunction = async function(
 
 export default httpTrigger;
 
-const fetchSynonymsFromTable = (word: string, tableName: string) => {
-	var query = new azure.TableQuery()
-		.where("PartitionKey eq ?", word)
-		.or("RowKey eq ?", word);
-
+const fetchSynonymsFromTable = (tableName: string, query: any) => {
 	return new Promise((resolve, reject) => {
 		tableService.queryEntities(tableName, query, null, function(
 			error: object,
@@ -64,4 +75,19 @@ const fetchSynonymsFromTable = (word: string, tableName: string) => {
 			}
 		});
 	});
+};
+
+const filterDuplicates: Function = (item: string[]) => [...new Set(item)];
+
+const formatResponse = (response: getRequestResponse, searchTerm: string) => {
+	let a = response.entries.map(entry => {
+		let rowKeyValue = entry.RowKey._;
+		let partitionKeyValue = entry.PartitionKey._;
+		if (rowKeyValue === searchTerm) {
+			return partitionKeyValue;
+		} else {
+			return rowKeyValue;
+		}
+	});
+	return filterDuplicates(a);
 };
