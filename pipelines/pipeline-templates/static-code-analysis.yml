@@ -1,0 +1,12 @@
+jobs:
+  - job: Static_Code_Analysis
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+      - task: Bash@3
+        displayName: 'SonarQube'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Here is where I would run static code analysis and fail if requirements are not met" 

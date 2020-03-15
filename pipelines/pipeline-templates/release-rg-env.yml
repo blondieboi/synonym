@@ -1,0 +1,103 @@
+parameters:
+  env: ''
+  app: ''
+
+jobs:
+  - deployment: Release_RG_${{ parameters.app }}_${{ parameters.env }}
+    pool: 'Hosted VS2017'
+    environment: '${{ parameters.app }}-${{ parameters.env }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: AzureResourceGroupDeployment@2
+              displayName: 'Create Or Update RG-BLNDT-${{ parameters.app }}-${{ parameters.env }}'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                resourceGroupName: 'RG-BLNDT-${{ parameters.app }}-${{ parameters.env }}'
+                location: 'North Europe'
+                csmFile: '$(Pipeline.Workspace)/**/deploy/deploy.json'
+                csmParametersFile: '$(Pipeline.Workspace)/**/deploy/deploy.parameters.${{ parameters.env }}.json'
+                deploymentOutputs: ResourceGroupDeploymentOutputs
+
+            - task: PowerShell@2
+              displayName: 'Make deployement output pipeline variables'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  $outputs = ConvertFrom-Json $($env:ResourceGroupDeploymentOutputs)
+                  foreach ($output in $outputs.PSObject.Properties) {
+                    Write-Host "##vso[task.setvariable variable=RG_$($output.Name)]$($output.Value.value)"
+                  }
+
+            - task: AzureCLI@1
+              displayName: 'Create table'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                scriptLocation: 'inlineScript'
+                inlineScript: 'az storage table create --name "SynonymTable" --account-name "$(RG_tableStorageName)" --account-key "$(RG_tableAccessKey)"'
+
+            - task: ExtractFiles@1
+              displayName: 'Extract UI files '
+              inputs:
+                archiveFilePatterns: ' $(Pipeline.Workspace)/**/ui-drop/$(Build.BuildNumber).zip'
+                destinationFolder: '$(System.DefaultWorkingDirectory)/ui/$(Build.BuildNumber)'
+
+            - task: AzureCLI@1
+              displayName: 'Configure storage account to static web'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                scriptLocation: inlineScript
+                inlineScript: 'az storage blob service-properties update --account-name "$(RG_uiName)" --static-website --index-document index.html'
+
+            - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+              displayName: 'Replace Tokens in **/*.js'
+              inputs:
+                rootDirectory: '$(System.DefaultWorkingDirectory)/ui/$(Build.BuildNumber)/build'
+                targetFiles: '**/*.js'
+                actionOnMissing: fail
+                tokenPrefix: 'http://uniquebaseurl.'
+                tokenSuffix: .uniquebaseurl.com
+
+            - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+              displayName: 'Replace Tokens in **.html'
+              inputs:
+                rootDirectory: '$(System.DefaultWorkingDirectory)/ui/$(Build.BuildNumber)/build'
+                targetFiles: '**.html'
+                actionOnMissing: fail
+                tokenPrefix: 'http://uniquebaseurl.'
+                tokenSuffix: .uniquebaseurl.com
+
+            - task: AzureCLI@1
+              displayName: 'Delete existing files from storage blob'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                scriptLocation: inlineScript
+                inlineScript: 'az storage blob delete-batch  --account-name "$(RG_uiName)" --account-key "$(RG_uiAccessKey)" -s  "$(RG_defaultContainerName)"'
+
+            - task: AzureCLI@1
+              displayName: 'Upload files to storage blob'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                scriptLocation: inlineScript
+                inlineScript: 'az storage blob upload-batch --account-name "$(RG_uiName)" --account-key "$(RG_uiAccessKey)" -s . -d "$(RG_defaultContainerName)"'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/ui/$(Build.BuildNumber)/build'
+
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'Deploy function to production slot'
+              inputs:
+                ConnectionType: 'AzureRM'
+                azureSubscription: 'Azure Resource Manager'
+                appType: 'functionApp'
+                WebuiName: '$(RG_apiResourceName)'
+                deployToSlotOrASE: true
+                ResourceGroupName: '$(RG_resourceGroupName)'
+                SlotName: 'production'
+                packageForLinux: '$(Pipeline.Workspace)/**/api-drop/$(Build.BuildNumber).zip'
+
+            - task: AzureCLI@1
+              displayName: 'Purge CDN'
+              inputs:
+                azureSubscription: 'Azure Resource Manager'
+                scriptLocation: inlineScript
+                inlineScript: 'az cdn endpoint purge -g  "$(RG_resourceGroupName)" -n "$(RG_cdnEndpointName)" --profile-name "$(RG_cdnProfileName)" --content-paths "/*" '

@@ -1,0 +1,86 @@
+jobs:
+  - job: Build_and_Publish_Artifacts
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      minNodeJsVersion: '13.x'
+      apiUrl: 'REACT_APP_API_BASE_URL=http://uniquebaseurl.RG_apiBaseUrl.uniquebaseurl.com'
+
+    steps:
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish deploy artifact'
+        inputs:
+          targetPath: '$(Build.SourcesDirectory)/deploy'
+          ArtifactName: 'deploy'
+          publishLocation: 'pipeline'
+
+      - task: NodeTool@0
+        displayName: 'Install Node.js (minimum $(minNodeJsVersion))'
+        inputs:
+          versionSpec: '>=$(minNodeJsVersion)'
+      - script: |
+          npm install
+          npm run build
+        displayName: 'npm install and build'
+        workingDirectory: '$(Build.SourcesDirectory)/api'
+
+      - task: ArchiveFiles@2
+        displayName: 'ZIP API files'
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)/api'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/api/$(Build.BuildNumber).zip'
+          replaceExistingArchive: true
+
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish API artifact'
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/api/$(Build.BuildNumber).zip'
+          ArtifactName: 'api-drop'
+          publishLocation: 'pipeline'
+
+      - task: Bash@3
+        displayName: Create .env file
+        inputs:
+          targetType: 'inline'
+          script: |
+            str=$'$(apiUrl)' && echo "$str" > .env
+          workingDirectory: '$(Build.SourcesDirectory)/ui'
+
+      - task: Bash@3
+        displayName: npm install
+        inputs:
+          targetType: 'inline'
+          script: 'npm install'
+          workingDirectory: '$(Build.SourcesDirectory)/ui'
+
+      - task: Npm@1
+        displayName: npm run build
+        inputs:
+          command: 'custom'
+          workingDir: '$(Build.SourcesDirectory)/ui'
+          customCommand: 'run build'
+
+      - task: Bash@3
+        displayName: run lint
+        inputs:
+          targetType: 'inline'
+          script: 'npm run lint'
+          workingDirectory: '$(Build.SourcesDirectory)/ui'
+          
+      - task: ArchiveFiles@2
+        displayName: 'ZIP UI files'
+        inputs:
+          rootFolderOrFile: '$(Build.SourcesDirectory)/ui/build'
+          includeRootFolder: true
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/ui/$(Build.BuildNumber).zip'
+          replaceExistingArchive: true
+
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish UI artifact'
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)/ui/$(Build.BuildNumber).zip'
+          ArtifactName: 'ui-drop'
+          publishLocation: 'pipeline'
