@@ -3,6 +3,7 @@
 button {
 	background-color: $color-button;
 	border: none;
+	color: white;
 	&:hover {
 		cursor: pointer;
 		background-color: $color-button-hover;
