@@ -7,7 +7,7 @@ export interface tableEntry {
 	PartitionKey: tableEntryElements;
 	RowKey: tableEntryElements;
 	Timestamp: tableEntryElements;
-	".metadata": {
+	'.metadata': {
 		etag: string;
 	};
 }
