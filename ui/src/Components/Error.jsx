@@ -1,11 +1,9 @@
-import React from "react";
+import React from 'react';
 
-const Error = () => {
-	return (
-		<p className="result-container">
-			Something went wrong, please try again while we fire our architect!
-		</p>
-	);
-};
+const Error = () => (
+  <p className="result-container">
+    Something went wrong, please try again while we fire our architect!
+  </p>
+);
 
 export default Error;
