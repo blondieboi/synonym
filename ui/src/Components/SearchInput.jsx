@@ -49,9 +49,10 @@ const SearchInput = () => {
   return (
     <div className="view-content">
       <div className="search-bar">
-        <p>What is a synonym for the word:</p>
+        <p id="search-text">What is a synonym for the word:</p>
         <input
           type="text"
+          id="search-input"
           value={searchTerm}
           placeholder="Type to search!"
           onChange={handleSearchInput}
@@ -60,6 +61,7 @@ const SearchInput = () => {
         />
         {searchTerm !== '' ? (
           <button
+            id="search-button"
             type="button"
             className="search-button"
             onClick={() => {
@@ -67,15 +69,14 @@ const SearchInput = () => {
               setIsLoading(true);
             }}
           >
-            {isLoading ? <div className="loader">Loading...</div> : 'Search'}
+            {isLoading ? <div id="loader" className="loader">Loading...</div> : 'Search'}
           </button>
         ) : (
           <></>
         )}
       </div>
-
-      {hasSearched ? <SearchResults searchResults={results} /> : <></>}
-      {isError ? <Error /> : <></>}
+      {hasSearched ? <SearchResults id="search-results" searchResults={results} /> : <></>}
+      {isError ? <Error id="search-error" /> : <></>}
     </div>
   );
 };

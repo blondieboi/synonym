@@ -7,6 +7,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
+    "enzyme": "^3.11.0",
     "node-sass": "^4.13.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
@@ -17,8 +18,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-	"eject": "react-scripts eject",
-	"lint": "eslint **/*.jsx"
+    "eject": "react-scripts eject",
+    "lint": "eslint **/*.jsx"
   },
   "browserslist": {
     "production": [
@@ -33,6 +34,7 @@
     ]
   },
   "devDependencies": {
+    "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "^2.20.1",
