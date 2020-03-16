@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { tableService, tableName } from '../utils/tableService';
+import { formatResponse } from '../utils/helpers'
 import { getRequestResponse, errorResponse } from '../interfaces/interfaces';
 
 const azure = require('azure-storage');
@@ -38,7 +39,6 @@ const httpTrigger: AzureFunction = async function (
           );
         });
 
-        
         const queryString = combinedFilter.join(' or ');
         const n2SynonymsQuery = new azure.TableQuery().where(queryString);
 
@@ -88,16 +88,6 @@ const fetchSynonymsFromTable = (tableName: string, query: any) => new Promise((r
   });
 });
 
-const filterDuplicates: Function = (item: string[]) => [...new Set(item)];
 
-const formatResponse = (response: getRequestResponse, searchTerm: string) => {
-  const a = response.entries.map((entry) => {
-    const rowKeyValue = entry.RowKey._;
-    const partitionKeyValue = entry.PartitionKey._;
-    if (rowKeyValue === searchTerm) {
-      return partitionKeyValue;
-    }
-    return rowKeyValue;
-  });
-  return filterDuplicates(a);
-};
+
+

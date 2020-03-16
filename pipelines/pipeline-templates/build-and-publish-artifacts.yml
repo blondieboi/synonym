@@ -20,6 +20,7 @@ jobs:
           versionSpec: '>=$(minNodeJsVersion)'
       - script: |
           npm install
+          npm run test 
           npm run build
         displayName: 'npm install and build'
         workingDirectory: '$(Build.SourcesDirectory)/api'
@@ -63,12 +64,19 @@ jobs:
           customCommand: 'run build'
 
       - task: Bash@3
-        displayName: run lint
+        displayName: npm run lint
         inputs:
           targetType: 'inline'
           script: 'npm run lint'
           workingDirectory: '$(Build.SourcesDirectory)/ui'
-          
+    
+    - task: Bash@3
+        displayName: npm run test
+        inputs:
+          targetType: 'inline'
+          script: 'npm run test'
+          workingDirectory: '$(Build.SourcesDirectory)/ui'
+
       - task: ArchiveFiles@2
         displayName: 'ZIP UI files'
         inputs:

@@ -13,7 +13,7 @@ export interface tableEntry {
 }
 
 export interface getRequestResponse {
-	entries: [tableEntry];
+	entries: tableEntry[];
 	continuationToken: boolean;
 }
 
